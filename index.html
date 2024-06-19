@@ -2,7 +2,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>筋トレ管理</title>
+    <title>部員名部</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
@@ -10,26 +10,27 @@
 <body>
 
     <form class="w-75 mx-auto">
-        <p class="mt-3">名前</p>
+        <p class="mt-3">TEST</p>
         <div>
-            <input class="form-control w-100 mt-1" name="name" placeholder="" required>
+            <input class="form-control w-100 mt-1" name="test">
         </div>
-        <p class="mt-3">腕立て</p>
+        <p class="mt-3">物件番号</p>
         <div>
-            <input class="form-control w-100 mt-1" name="udetate" required>
+            <input class="form-control w-100 mt-1" name="bk_no">
         </div>
-        <p class="mt-3">腹筋</p>
+        <p class="mt-3">受付番号</p>
         <div>
-            <input class="form-control w-100 mt-1" name="fukkin" required>
+            <input class="form-control w-100 mt-1" name="uk_no">
         </div>
-        <p class="mt-3">背筋</p>
+        <p class="mt-3">お客さま番号</p>
         <div>
-            <input class="form-control w-100 mt-1" name="haikin" required>
+            <input class="form-control w-100 mt-1" name="user_no">
         </div>
-        <p class="mt-3">スクワット</p>
+        <p class="mt-3">添付ファイル</p>
         <div>
-            <input class="form-control w-100 mt-1" name="sukuwat" required>
+            <input class="form-control w-100 mt-1" name="temp_file">
         </div>
+        <button type="button" class="mt-4 btn btn-primary" onclick="clickDisplayAlert()">取得</button>
         <input type="submit" class="mt-4 btn btn-primary" value="送信">
     </form>
     
@@ -69,15 +70,56 @@
         const params = (new URL(document.location)).searchParams;
         const key = params.get('key');
 
+        function clickDisplayAlert() {
+            //alert("ボタンがクリックされました！");
+
+            const api_token = "pltzCgyAdB0XNceJOqXhpNQZp4wh23j2vbg5VvaF"
+/*
+            const xhr = new XMLHttpRequest();
+            //xhr.open("GET", "https://xu26h4n8n1c0.cybozu.com/k/v1/record.json?app=104&id=1"); //HTTP Method, URL
+            xhr.open("GET", "https://cloud-isd-srv.com/api/MULCON_TEST_API_URL/mulcon/api/get_geocoding_data?address=福岡市博多区比恵町"); //HTTP Method, URL
+            xhr.withCredentials = true;
+            //xhr.setRequestHeader("X-Cybozu-API-Token", api_token); //Header content-type
+            xhr.setRequestHeader("Content-Type", "application/json"); //Header content-type
+            xhr.send();
+            xhr.responseType = "json";
+
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    // ok
+                    const res = JSON.parse(xhr.response);
+                    console.log(res);
+                } else {
+                    // error
+                    console.error(xhr.status, xhr.statusText);
+                }
+            }
+*/
+
+            $.ajax({
+                type:'get',   //post 방식으로 전송
+                url:'https://cloud-isd-srv.com/api/MULCON_TEST_API_URL/mulcon/api/get_geocoding_data?address=福岡市博多区比恵町',   //데이터를 주고받을 파일 주소
+                dataType: 'json',  //json파일 형식으로 값 받기
+                success: function(data){
+                    alert(JSON.stringify(data));   //data를 alert으로 찍어줌  
+                },
+                error: function(err){
+                    console.log(err);    //에러가 발생하면 콘솔 로그를 찍어준다. 
+                }
+            });
+
+        }
+
         $(function () {
             $('form').submit(function () {
-                const name    = $('input[name="name"]').val();
-                const udetate = $('input[name="udetate"]').val();
-                const fukkin  = $('input[name="fukkin"]').val();
-                const haikin  = $('input[name="haikin"]').val();
-                const sukuwat = $('input[name="sukuwat"]').val();
+
+                const test = $('input[name="test"]').val();
+                const bk_no = $('input[name="bk_no"]').val();
+                const uk_no = $('input[name="uk_no"]').val();
+                const user_no = $('input[name="user_no"]').val();
+                const temp_file = $('input[name="temp_file"]').val();
                 
-                const msg = `${name}\n${udetate}\n${fukkin}\n${haikin}\n${sukuwat}`;
+                const msg = `${test}\n${bk_no}\n${uk_no}\n${user_no}\n${temp_file}`;
                 sendText(msg);
 
                 return false;
