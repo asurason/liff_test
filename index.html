@@ -80,7 +80,7 @@
 
             const xhr = new XMLHttpRequest();
             //xhr.open("GET", "https://xu26h4n8n1c0.cybozu.com/k/v1/record.json?app=104&id=1"); //HTTP Method, URL
-            xhr.open("GET", "https://cloud-isd-srv.com/api/MULCON_TEST_API_URL/mulcon/api/get_geocoding_data?address=福岡市博多区比恵町"); //HTTP Method, URL
+            xhr.open("GET", "https://cloud-isd-srv.com/api/MULCON_TEST_API_URL/mulcon/api/get_kintone_data?config=config_kintone_app2liff&key=104;1"); //HTTP Method, URL
             //xhr.withCredentials = true;
             //xhr.setRequestHeader("X-Cybozu-API-Token", api_token); //Header content-type
             xhr.setRequestHeader("Content-Type", "application/json"); //Header content-type
@@ -91,8 +91,22 @@
                 if (xhr.status === 200) {
                     // ok
                     //const res = JSON.parse(xhr.response);
-                    
-                    alert(JSON.stringify(xhr.response));
+
+                    const json = xhr.response;
+                    alert(JSON.stringify(json));
+                    var result_length = Object.keys(json.result).length;
+                    if (result_length > 0) {
+                        for (var item in json.result) {
+                            var element = json.result[item];
+                            var by = element.by;
+                            var value = element.value;
+                            //console.log(element.by);
+                            //console.log(element.value);
+                            $('input['+ by + '="' + item + '"]').val(value)
+
+                        }
+                    }
+
                     //console.log(res);
                 } else {
                     // error
