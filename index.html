@@ -1,152 +1,140 @@
+<!DOCTYPE html>
 <html>
+
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>部員名部</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" rossorigin="anonymous">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/themes/base/jquery-ui.min.css">
-</head>
-<body>
-
-    <form class="w-75 mx-auto">
-        <p class="mt-3">TEST3355</p>
-        <div>
-            <input class="form-control w-100 mt-1" name="test">
-        </div>
-        <p class="mt-3">物件番号</p>
-        <div>
-            <input class="form-control w-100 mt-1" name="bk_no">
-        </div>
-        <p class="mt-3">受付番号</p>
-        <div>
-            <input class="form-control w-100 mt-1" name="uk_no">
-        </div>
-        <p class="mt-3">お客さま番号</p>
-        <div>
-            <input class="form-control w-100 mt-1" name="user_no">
-        </div>
-        <p class="mt-3">添付ファイル</p>
-        <div>
-            <input class="form-control w-100 mt-1" name="temp_file">
-        </div>
-        <button type="button" class="mt-4 btn btn-primary" onclick="clickDisplayAlert()">取得</button>
-        <input type="submit" class="mt-4 btn btn-primary" value="送信">
-    </form>
-    
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" crossorigin="anonymous"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" crossorigin="anonymous"></script>
-    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2.1/sdk.js"></script>
+    <title>OCR APP</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no, minimal-ui">
+    <!-- meta name="apple-mobile-web-app-capable" content="yes" -->
+    <link rel="stylesheet" href="index.css" />
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <script src="https://cdn.rawgit.com/naptha/tesseract.js/1.0.7/dist/tesseract.js"></script>
     <script>
-        
-        $(document).ready(function () {
-            const liffId = "2005651301-RbyoGllz";
-            initializeLiff(liffId);
-        })
-
-        function initializeLiff(liffId) {
-            liff.init({
-                liffId: liffId
-            }).then(() => {
-                initializeApp();
-            }).catch((err) => {
-                console.log('LIFF Initialization failed ', err);
-            });
-        }
-
-        function sendText(text) {
-            liff.sendMessages([{
-                'type': 'text',
-                'text': text
-            }]).then(function () {
-                liff.closeWindow();
-            }).catch(function (error) {
-                window.alert('Failed to send message ' + error);
-            });
-        }
-        
-        const params = (new URL(document.location)).searchParams;
-        const key = params.get('key');
-
-        function clickDisplayAlert() {
-            //alert("ボタンがクリックされました！");
-
-
-            $('input[name="test"]').val("aaa")
-
-            const api_token = "pltzCgyAdB0XNceJOqXhpNQZp4wh23j2vbg5VvaF"
-
-            const xhr = new XMLHttpRequest();
-            //xhr.open("GET", "https://xu26h4n8n1c0.cybozu.com/k/v1/record.json?app=104&id=1"); //HTTP Method, URL
-            xhr.open("GET", "https://cloud-isd-srv.com/api/MULCON_TEST_API_URL/mulcon/api/get_kintone_data?config=config_kintone_app2liff&key=104;1"); //HTTP Method, URL
-            //xhr.withCredentials = true;
-            //xhr.setRequestHeader("X-Cybozu-API-Token", api_token); //Header content-type
-            xhr.setRequestHeader("Content-Type", "application/json"); //Header content-type
-            xhr.send();
-            xhr.responseType = "json";
-
-            xhr.onload = () => {
-                if (xhr.status === 200) {
-                    // ok
-                    //const res = JSON.parse(xhr.response);
-
-                    const json = xhr.response;
-                    alert(JSON.stringify(json));
-                    var result_length = Object.keys(json.result).length;
-                    if (result_length > 0) {
-                        for (var item in json.result) {
-                            var element = json.result[item];
-                            var by = element.by;
-                            var value = element.value;
-                            //console.log(element.by);
-                            //console.log(element.value);
-                            $('input['+ by + '="' + item + '"]').val(value)
-
-                        }
-                    }
-
-                    //console.log(res);
-                } else {
-                    // error
-                    console.error(xhr.status, xhr.statusText);
-                }
-            }
-
-/*
-            $.ajax({
-                type:'get',   //post 방식으로 전송
-                url:'https://cloud-isd-srv.com/api/MULCON_TEST_API_URL/mulcon/api/get_geocoding_data?address=福岡市博多区比恵町',   //데이터를 주고받을 파일 주소
-                dataType: 'json',  //json파일 형식으로 값 받기
-                success: function(data){
-                    alert(JSON.stringify(data));   //data를 alert으로 찍어줌  
-                },
-                error: function(err){
-                    console.log(err);    //에러가 발생하면 콘솔 로그를 찍어준다. 
-                }
-            });
-*/
-
-        }
-
-        $(function () {
-            $('form').submit(function () {
-
-                const test = $('input[name="test"]').val();
-                const bk_no = $('input[name="bk_no"]').val();
-                const uk_no = $('input[name="uk_no"]').val();
-                const user_no = $('input[name="user_no"]').val();
-                const temp_file = $('input[name="temp_file"]').val();
-                
-                const msg = `${test}\n${bk_no}\n${uk_no}\n${user_no}\n${temp_file}`;
-                sendText(msg);
-
-                return false;
-            });
-        });
-
+        (function() {
+            Tesseract
+                .recognize("u.jpg", {
+                    lang: 'jpn'
+                })
+                .progress(function(p) {
+                    $("#msg").text('準備中🐹 <' + p.status + ": " + (100 * p.progress).toFixed(1) + '%>')
+                })
+                .then(function(result) {
+                    $("#msg").text('準備完了🐸')
+                });
+        }());
     </script>
+</head>
 
+<body>
+    <div align="center">
+        <video id="player" controls autoplay playsinline></video>
+        <canvas id="canvas" width="300" height="100"></canvas>
+        <div class="button">
+            <button id="capture">日本語を撮影する</button>
+        </div>
+        <div class="button">
+            <button id="captureeng">Capture English</button>
+        </div>
+        <div id="msg" align="center"></div>
+        <canvas id="snapshot" width="300" height="100"></canvas>
+        <br>
+        <script>
+            var video = document.getElementById("player"),
+                canvas = document.getElementById("canvas"),
+                ctx = canvas.getContext("2d");
+            requestAnimationFrame(draw);
+    
+            function draw() {
+                canvas.width = 300;
+                canvas.height = 100;
+                ctx.drawImage(video, 100, 300, 600, 200,
+                    0, 0, 300, 100);
+                imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    ave = (data[i + 0] + data[i + 1] + data[i + 2]) / 3;
+                    data[i + 0] =
+                        data[i + 1] =
+                        data[i + 2] = (ave > 128) ? 255 : 0;
+                    data[i + 3] = 255;
+                }
+                ctx.putImageData(imgData, 0, 0);
+                requestAnimationFrame(draw);
+            }
+            var snapshotCanvas = document.getElementById('snapshot');
+            var captureButton = document.getElementById('capture');
+            var captureButtoneng = document.getElementById('captureeng');
+            var snapshotButton = document.getElementById('snapshotbutton');
+            var handleSuccess = function(stream) {
+                video.srcObject = stream;
+            };
+            var num = 1;
+    
+            captureButton.addEventListener('click', function() {
+                var context = snapshot.getContext('2d');
+                context.drawImage(video, 100, 300, 600, 200, 0, 0, snapshotCanvas.width,
+                    snapshotCanvas.height);
+                const url = snapshot.toDataURL("image/png");
+                Tesseract
+                    .recognize(url, {
+                        lang: 'jpn'
+                    })
+                    .progress(function(p) {
+                        $("#msg").text(p.status + ": " + p.progress)
+                    })
+                    .then(function(result) {
+                        console.log(result)
+                        $("#msg").text("Progress Complete")
+                        var elem = document.createElement('div');
+                        elem.innerHTML = "<div id=" + num + " style='width:300px; background-color:#EEEEEE'><img src=" + url + " /></div><br>"
+                        var parent = document.getElementById("results");
+                        parent.insertBefore(elem, parent.firstChild);
+                        var numdiv = document.getElementById(num);
+                        var msg = document.createElement('div');
+                        msg.innerHTML = result.text;
+                        numdiv.appendChild(msg);
+                        num += 1;
+                    });
+            });
+            captureButtoneng.addEventListener('click', function() {
+                var context = snapshot.getContext('2d');
+                context.drawImage(video, 100, 300, 600, 200, 0, 0, snapshotCanvas.width,
+                    snapshotCanvas.height);
+                const url = snapshot.toDataURL("image/png");
+                Tesseract
+                    .recognize(url, {
+                        lang: 'eng'
+                    })
+                    .progress(function(p) {
+                        $("#msg").text(p.status + ": " + p.progress)
+                    })
+                    .then(function(result) {
+                        console.log(result)
+                        $("#msg").text("Progress Complete")
+                        var elem = document.createElement('div');
+                        elem.innerHTML = "<div id=" + num + " style='width:300px; background-color:#EEEEEE'><img src=" + url + " /></div><br>"
+                        var parent = document.getElementById("results");
+                        parent.insertBefore(elem, parent.firstChild);
+                        var numdiv = document.getElementById(num);
+                        var msg = document.createElement('div');
+                        msg.innerHTML = result.text;
+                        numdiv.appendChild(msg);
+                        num += 1;
+                    });
+            });
+            var front = false;
+            var constraints = {
+                audio: false,
+                video: {
+                    width: 1920,
+                    height: 1080,
+                    facingMode: (front ? "user" : "environment")
+                }
+            };
+            navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess);
+        </script>
+    </div>
 </body>
+<div id="results" align="center"></div>
+
 </html>
