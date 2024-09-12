@@ -83,15 +83,13 @@
     <!-- テキスト認識 -->
     <script type="text/javascript">
         // google cloud api key
-        const api_key = 'AIzaSyDxY9z3nu72HjAP5dlGuzbLqy1WZlUXBnE';
+        const api_key = '';
         const url     = 'https://vision.googleapis.com/v1/images:annotate';
 
         let captureButton = document.getElementById('textCapture');
         let imgTarget     = document.getElementById('picture');
         
         captureButton.addEventListener('click', function() {
-
-            $("pre").append("click\n")
 
             if (!imgTarget.files || imgTarget.files.length == 0) return;
             Promise.resolve(imgTarget.files[0])
@@ -135,9 +133,6 @@
                 ]
             };
 
-            $("pre").append("sendAPI\n")
-            $("pre").append(base64string)
-
             let xhr = new XMLHttpRequest();
             xhr.open('POST', `${url}?key=${api_key}`, true);
             xhr.setRequestHeader('Content-Type', 'application/json');
@@ -149,8 +144,6 @@
                         $("pre").append(`Failed with ${xhr.status}:${xhr.statusText}`)
                         return reject({message: `Failed with ${xhr.status}:${xhr.statusText}`});
                     }
-                    
-                    $("pre").append(xhr.responseTex)
                     resolve(JSON.parse(xhr.responseText));
                 };
             })
