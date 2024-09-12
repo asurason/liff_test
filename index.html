@@ -9,7 +9,7 @@
         body {
             text-align: center;
         }
-        
+
         img {
             max-height:960px;
             max-width:540px;
@@ -33,6 +33,15 @@
             width:50%;
             margin: auto;
         }
+
+        #textCapture {
+            padding: 10px 30px;
+            font-weight: bold;
+            font-size: 1.4em;
+            background-color: rgb(71, 136, 34);
+            color: #fff;
+            border-style: none;
+        }
     </style>
     
     <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
@@ -49,6 +58,10 @@
     </div>
     <div>
         <img style="max-width: 400px;">
+    </div>
+
+    <div>
+        <button id="textCapture">撮影</button>
     </div>
         
     <div class="resultArea">
@@ -68,7 +81,43 @@
     <script type="text/javascript">
         // google cloud api key
         const api_key = 'AIzaSyDxY9z3nu72HjAP5dlGuzbLqy1WZlUXBnE';
-        const url = 'https://vision.googleapis.com/v1/images:annotate';
+        const url     = 'https://vision.googleapis.com/v1/images:annotate';
+
+        let captureButton = document.getElementById('textCapture');
+        let imgTarget     = document.getElementById('picture');
+        
+        captureButton.addEventListener('click', function() {
+
+            if (!imgTarget.files || imgTarget.files.length == 0) return;
+            Promise.resolve(imgTarget.files[0])
+                .then(readFile)
+                .then(sendAPI)
+                .then(res => {
+                console.log('成功!', res);
+
+                if(res.responses[0].textAnnotations){
+                    for (var i = 1; i < res.responses[0].textAnnotations.length; i++){
+                        var resultText = res.responses[0].textAnnotations[i].description
+                        console.log(resultText);
+
+                        var style = 'resultTableContent';
+                        if (isNaN(resultText) == false) {
+                            var numberDigit = String(resultText).length;
+                            if (numberDigit >= 5) {
+                                style = 'resultTableContentTarget';
+                            }
+                        }
+
+                        $("#textBox").append("<tr><td class='" + style + "'>" + resultText + "</td></tr>")
+
+                    }		
+                }
+            })
+            .catch(err => {
+                console.log('失敗:', err);
+                document.querySelector('pre').innerHTML = JSON.stringify(err, null, 2);
+            });
+        });
 
         // Cloud Vision APIリクエスト
         const sendAPI = (base64string) => {
@@ -113,40 +162,10 @@
 
         // Event handling
         document.querySelector('input').addEventListener('change', ev => {
-
             if($("#textBox tr").length){
                 $("#textBox tr").remove();
             }
-
-            if (!ev.target.files || ev.target.files.length == 0) return;
-            Promise.resolve(ev.target.files[0])
-                .then(readFile)
-                .then(sendAPI)
-                .then(res => {
-                console.log('成功!', res);
-
-                if(res.responses[0].textAnnotations){
-                    for (var i = 1; i < res.responses[0].textAnnotations.length; i++){
-                        var resultText = res.responses[0].textAnnotations[i].description
-                        console.log(resultText);
-
-                        var style = 'resultTableContent';
-                        if (isNaN(resultText) == false) {
-                            var numberDigit = String(resultText).length;
-                            if (numberDigit >= 5) {
-                                style = 'resultTableContentTarget';
-                            }
-                        }
-
-                        $("#textBox").append("<tr><td class='" + style + "'>" + resultText + "</td></tr>")
-
-                    }		
-                }
-            })
-            .catch(err => {
-                console.log('失敗:', err);
-                document.querySelector('pre').innerHTML = JSON.stringify(err, null, 2);
-            });
+            
         });
 
     </script>
