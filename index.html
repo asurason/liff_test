@@ -136,7 +136,7 @@
             };
 
             $("pre").append("sendAPI\n")
-            $("pre").append(xhr.responseTex)
+            $("pre").append(base64string)
 
             let xhr = new XMLHttpRequest();
             xhr.open('POST', `${url}?key=${api_key}`, true);
