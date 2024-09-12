@@ -1,143 +1,154 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="ja">
 <head>
-    <title>OCR APP</title>
+    <title>テキスト認識</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no, minimal-ui">
-    <!-- meta name="apple-mobile-web-app-capable" content="yes" -->
-    <link rel="stylesheet" href="index.css" />
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
-    <script src="https://cdn.rawgit.com/naptha/tesseract.js/1.0.7/dist/tesseract.js"></script>
-    <script>
-        (function() {
-            Tesseract
-                .recognize("u.jpg", {
-                    lang: 'jpn'
-                })
-                .progress(function(p) {
-                    $("#msg").text('準備中🐹 <' + p.status + ": " + (100 * p.progress).toFixed(1) + '%>')
-                })
-                .then(function(result) {
-                    $("#msg").text('準備完了🐸')
-                });
-        }());
-    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no, shrink-to-fit=no, minimal-ui">    
+    
+    <style>
+        body {
+            text-align: center;
+        }
+        
+        img {
+            max-height:960px;
+            max-width:540px;
+            height:auto;
+            width:auto;
+        }
+        .resultTableContent {
+            height:30px;
+            border: 3px solid #003A76;
+            border-radius: 4px;
+        }
+
+        .resultTableContentTarget {
+            height:30px;
+            border: 3px solid #003A76;
+            border-radius: 4px;
+            background-color: yellow;
+        }
+
+        #textTable {
+            width:50%;
+            margin: auto;
+        }
+    </style>
+    
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="http://code.highcharts.com/highcharts.js"></script>
+    <script src="http://code.highcharts.com/highcharts-more.js"></script>
 </head>
 
 <body>
-    <div align="center">
-        <div>Ver 1.0.1 </div>
-        <video id="player" controls autoplay playsinline></video>
-        <canvas id="canvas" width="300" height="100"></canvas>
-        <div class="button">
-            <button id="capture">日本語を撮影する</button>
-        </div>
-        <div class="button">
-            <button id="captureeng">Capture English</button>
-        </div>
-        <div id="msg" align="center"></div>
-        <canvas id="snapshot" width="300" height="100"></canvas>
-        <br>
-        <script>
-            var video = document.getElementById("player"),
-                canvas = document.getElementById("canvas"),
-                ctx = canvas.getContext("2d");
-            requestAnimationFrame(draw);
-    
-            function draw() {
-                canvas.width = 300;
-                canvas.height = 100;
-                ctx.drawImage(video, 100, 300, 600, 200,
-                    0, 0, 300, 100);
-                imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-                data = imgData.data;
-                
-                for (let i = 0; i < data.length; i += 4) {
-                    ave = (data[i + 0] + data[i + 1] + data[i + 2]) / 3;
-                    data[i + 0] =
-                        data[i + 1] =
-                        data[i + 2] = (ave > 128) ? 255 : 0;
-                    data[i + 3] = 255;
-                }
-                
-                ctx.putImageData(imgData, 0, 0);
-                requestAnimationFrame(draw);
-            }
-            var snapshotCanvas = document.getElementById('snapshot');
-            var captureButton = document.getElementById('capture');
-            var captureButtoneng = document.getElementById('captureeng');
-            var snapshotButton = document.getElementById('snapshotbutton');
-            var handleSuccess = function(stream) {
-                video.srcObject = stream;
-            };
-            var num = 1;
-    
-            captureButton.addEventListener('click', function() {
-                var context = snapshot.getContext('2d');
-                context.drawImage(video, 100, 300, 600, 200, 0, 0, snapshotCanvas.width,
-                    snapshotCanvas.height);
-                const url = snapshot.toDataURL("image/png");
-                Tesseract
-                    .recognize(url, {
-                        lang: 'jpn'
-                    })
-                    .progress(function(p) {
-                        $("#msg").text(p.status + ": " + p.progress)
-                    })
-                    .then(function(result) {
-                        console.log(result)
-                        $("#msg").text("Progress Complete")
-                        var elem = document.createElement('div');
-                        elem.innerHTML = "<div id=" + num + " style='width:300px; background-color:#EEEEEE'><img src=" + url + " /></div><br>"
-                        var parent = document.getElementById("results");
-                        parent.insertBefore(elem, parent.firstChild);
-                        var numdiv = document.getElementById(num);
-                        var msg = document.createElement('div');
-                        msg.innerHTML = result.text;
-                        numdiv.appendChild(msg);
-                        num += 1;
-                    });
-            });
-            captureButtoneng.addEventListener('click', function() {
-                var context = snapshot.getContext('2d');
-                context.drawImage(video, 100, 300, 600, 200, 0, 0, snapshotCanvas.width,
-                    snapshotCanvas.height);
-                const url = snapshot.toDataURL("image/png");
-                Tesseract
-                    .recognize(url, {
-                        lang: 'eng'
-                    })
-                    .progress(function(p) {
-                        $("#msg").text(p.status + ": " + p.progress)
-                    })
-                    .then(function(result) {
-                        console.log(result)
-                        $("#msg").text("Progress Complete")
-                        var elem = document.createElement('div');
-                        elem.innerHTML = "<div id=" + num + " style='width:300px; background-color:#EEEEEE'><img src=" + url + " /></div><br>"
-                        var parent = document.getElementById("results");
-                        parent.insertBefore(elem, parent.firstChild);
-                        var numdiv = document.getElementById(num);
-                        var msg = document.createElement('div');
-                        msg.innerHTML = result.text;
-                        numdiv.appendChild(msg);
-                        num += 1;
-                    });
-            });
-            var front = false;
-            var constraints = {
-                audio: false,
-                video: {
-                    width: 1920,
-                    height: 1080,
-                    facingMode: (front ? "user" : "environment")
-                }
-            };
-            navigator.mediaDevices.getUserMedia(constraints).then(handleSuccess);
-        </script>
+    <div>
+        <label for="picture">認識するテキストをカメラで撮影してください。</label>
     </div>
-</body>
-<div id="results" align="center"></div>
+    <div>
+        <input type="file" id="picture" name="picture" accept="image/*" capture="environment" />
+    </div>
+    <div>
+        <img style="max-width: 400px;">
+    </div>
+        
+    <div class="resultArea">
+        <pre></pre>
+        <!--- テキスト認識の結果を表示 --->
+        <table id="textTable">
+            <thead>
+                <tr>
+                    <td><b>テキスト認識結果</b></td>
+                </tr>
+            </thead>
+            <tbody id="textBox"></tbody>
+        </table>
+    </div>
 
+    <!-- テキスト認識 -->
+    <script type="text/javascript">
+        // google cloud api key
+        const api_key = 'AIzaSyDxY9z3nu72HjAP5dlGuzbLqy1WZlUXBnE';
+        const url = 'https://vision.googleapis.com/v1/images:annotate';
+
+        // Cloud Vision APIリクエスト
+        const sendAPI = (base64string) => {
+            let body = {
+                requests: [
+                    {
+                        image: {content: base64string}, 
+                        features: [{type: 'TEXT_DETECTION'}]
+                    }
+                ]
+            };
+
+            let xhr = new XMLHttpRequest();
+            xhr.open('POST', `${url}?key=${api_key}`, true);
+            xhr.setRequestHeader('Content-Type', 'application/json');
+
+            const p = new Promise((resolve, reject) => {
+                xhr.onreadystatechange = () => {
+                    if (xhr.readyState != XMLHttpRequest.DONE) return;
+                    if (xhr.status >= 400) return reject({message: `Failed with ${xhr.status}:${xhr.statusText}`});
+                    resolve(JSON.parse(xhr.responseText));
+                };
+            })
+
+            xhr.send(JSON.stringify(body));
+            return p;
+        }
+
+        // ファイル base64変換
+        const readFile = (file) => {
+            let reader = new FileReader();
+            const p = new Promise((resolve, reject) => {
+                reader.onload = (ev) => {
+                    document.querySelector('img').setAttribute('src', ev.target.result);
+                    resolve(ev.target.result.replace(/^data:image\/(png|jpeg);base64,/, ''));
+                };
+            })
+            reader.readAsDataURL(file);
+
+            return p;
+        };
+
+        // Event handling
+        document.querySelector('input').addEventListener('change', ev => {
+
+            if($("#textBox tr").length){
+                $("#textBox tr").remove();
+            }
+
+            if (!ev.target.files || ev.target.files.length == 0) return;
+            Promise.resolve(ev.target.files[0])
+                .then(readFile)
+                .then(sendAPI)
+                .then(res => {
+                console.log('成功!', res);
+
+                if(res.responses[0].textAnnotations){
+                    for (var i = 1; i < res.responses[0].textAnnotations.length; i++){
+                        var resultText = res.responses[0].textAnnotations[i].description
+                        console.log(resultText);
+
+                        var style = 'resultTableContent';
+                        if (isNaN(resultText) == false) {
+                            var numberDigit = String(resultText).length;
+                            if (numberDigit >= 5) {
+                                style = 'resultTableContentTarget';
+                            }
+                        }
+
+                        $("#textBox").append("<tr><td class='" + style + "'>" + resultText + "</td></tr>")
+
+                    }		
+                }
+            })
+            .catch(err => {
+                console.log('失敗:', err);
+                document.querySelector('pre').innerHTML = JSON.stringify(err, null, 2);
+            });
+        });
+
+    </script>
+</body>
 </html>
