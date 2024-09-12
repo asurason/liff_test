@@ -65,7 +65,6 @@
     </div>
         
     <div class="resultArea">
-        <pre></pre>
         <!--- テキスト認識の結果を表示 --->
         <table id="textTable">
             <thead>
@@ -77,16 +76,22 @@
         </table>
     </div>
 
+    <div class="log">
+        <pre></pre>
+    </div>
+
     <!-- テキスト認識 -->
     <script type="text/javascript">
         // google cloud api key
-        const api_key = '';
+        const api_key = 'AIzaSyDxY9z3nu72HjAP5dlGuzbLqy1WZlUXBnE';
         const url     = 'https://vision.googleapis.com/v1/images:annotate';
 
         let captureButton = document.getElementById('textCapture');
         let imgTarget     = document.getElementById('picture');
         
         captureButton.addEventListener('click', function() {
+
+            $("pre").append("click\n")
 
             if (!imgTarget.files || imgTarget.files.length == 0) return;
             Promise.resolve(imgTarget.files[0])
@@ -115,7 +120,7 @@
             })
             .catch(err => {
                 console.log('失敗:', err);
-                document.querySelector('pre').innerHTML = JSON.stringify(err, null, 2);
+                //document.querySelector('pre').innerHTML = JSON.stringify(err, null, 2);
             });
         });
 
@@ -130,6 +135,9 @@
                 ]
             };
 
+            $("pre").append("sendAPI\n")
+            $("pre").append(xhr.responseTex)
+
             let xhr = new XMLHttpRequest();
             xhr.open('POST', `${url}?key=${api_key}`, true);
             xhr.setRequestHeader('Content-Type', 'application/json');
@@ -137,7 +145,12 @@
             const p = new Promise((resolve, reject) => {
                 xhr.onreadystatechange = () => {
                     if (xhr.readyState != XMLHttpRequest.DONE) return;
-                    if (xhr.status >= 400) return reject({message: `Failed with ${xhr.status}:${xhr.statusText}`});
+                    if (xhr.status >= 400) {
+                        $("pre").append(`Failed with ${xhr.status}:${xhr.statusText}`)
+                        return reject({message: `Failed with ${xhr.status}:${xhr.statusText}`});
+                    }
+                    
+                    $("pre").append(xhr.responseTex)
                     resolve(JSON.parse(xhr.responseText));
                 };
             })
